@@ -1,6 +1,6 @@
 # PhpLiteFormBuilder
 
-Basics
+##Basic form
 ```
 $form = new Form('myForm', 'post', 'action_file.php');
 
@@ -13,7 +13,7 @@ $form->render();
 
 ```
 
-Getting data
+##Getting data
 
 ```
 $mform = Form::getForm('myForm');
