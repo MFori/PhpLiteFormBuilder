@@ -45,8 +45,8 @@ class Form
     public function __construct($name, $method = 'POST', $action = null)
     {
         $this->name = $name;
-        $this->method = strtoupper($method);
-        $this->action = $action;
+        $this->method = $this->secure(strtoupper($method));
+        $this->action = $this->secure($action);
     }
 
     /**
@@ -214,15 +214,15 @@ class Form
      * Adding new element
      * @param Element $element
      * @param bool $required
-     * @param bool $pre_fill, if element has value set it
+     * @param bool $pre_fill
      * @return Element
+     * @throws FormException
      */
     public function addElement($element, $required = false, $pre_fill = true)
     {
         if ($element instanceof Element) {
             $element->setRequired($required);
             $element->setPreFill($pre_fill);
-            $element->setMethod($this->method);
             $this->elements[] = $element;
             return $element;
         } else
@@ -231,8 +231,9 @@ class Form
 
     /**
      * Create new fieldset, 'open' him
-     * @param FieldSet $fieldset
+     * @param FieldSet $fieldSet
      * @return FieldSet
+     * @throws FormException
      */
     public function openFieldSet($fieldSet)
     {
@@ -240,12 +241,13 @@ class Form
             $this->elements[] = $fieldSet;
             return $fieldSet;
         } else
-            throw new FormException('fieldset is not instance of class FieldSet!');
+            throw new FormException('param fieldset is not instance of class FieldSet!');
     }
 
     /**
      * Close the last open fieldset and return it
      * @return FieldSet
+     * @throws FormException
      */
     public function closeFieldSet()
     {
@@ -325,7 +327,7 @@ class Form
      */
     public function setAttribute($attr)
     {
-        $this->attributes[] = $attr;
+        $this->attributes[] = $this->secure($attr);
         return $this;
     }
 
@@ -336,7 +338,7 @@ class Form
      */
     public function setId($id)
     {
-        $this->id = $id;
+        $this->id = $this->secure($id);
         return $this;
     }
 
@@ -347,7 +349,7 @@ class Form
      */
     public function setClass($class)
     {
-        $this->classes[] = htmlspecialchars($class, ENT_QUOTES);
+        $this->classes[] = $this->secure($class);
         return $this;
     }
 
@@ -370,7 +372,7 @@ class Form
      */
     public function setAction($action)
     {
-        $this->action = htmlspecialchars($action, ENT_QUOTES);
+        $this->action = $this->secure($action);
         return $this;
     }
 
@@ -416,5 +418,20 @@ class Form
             }
         }
         return null;
+    }
+
+    /**
+     * @param array|string $param
+     * @return array|string
+     */
+    private function secure($param = array())
+    {
+        if (is_string($param)) return htmlspecialchars($param, ENT_QUOTES);
+        else if (is_array($param)) {
+            foreach ($param as $key => $val) {
+                $param[$key] = $this->secure($val);
+            }
+            return $param;
+        } else return $param;
     }
 }
