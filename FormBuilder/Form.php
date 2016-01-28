@@ -22,7 +22,7 @@ include_once 'FormException.php';
 include_once 'InputFile.php';
 
 
-/*
+/**
  * Lite form builder library
  * @author Martin Forejt
  */
@@ -37,7 +37,7 @@ class Form
     private $elements = array();
     private $attributes = array();
 
-    /*
+    /**
      * @param string $name, unique identifier of the form
      * @param string $method, form method attribute
      * @param string $action, form action attribute
@@ -49,7 +49,7 @@ class Form
         $this->action = $action;
     }
 
-    /*
+    /**
      * Render the form
      */
     public function render()
@@ -80,7 +80,7 @@ class Form
         echo $html;
     }
 
-    /*
+    /**
      * Return Form object by name, must call before validating, getting data
      * @param string $name, unique identifier of the form
      * @return Form | null
@@ -98,7 +98,7 @@ class Form
         return null;
     }
 
-    /*
+    /**
      * Verify if exist an element
      * @param Element $element
      * @return bool
@@ -109,7 +109,7 @@ class Form
         else return false;
     }
 
-    /*
+    /**
      * Save form to static variable $forms
      */
     public function create()
@@ -117,7 +117,7 @@ class Form
         self::$forms[$this->name] = $this;
     }
 
-    /*
+    /**
      * @return string, form method attribute
      */
     public function getMethod()
@@ -125,7 +125,7 @@ class Form
         return $this->method;
     }
 
-    /*
+    /**
      * Save form form session to static variable $forms, assigning values to element,
      * must call before validating or getting data
      */
@@ -173,7 +173,7 @@ class Form
         }
     }
 
-    /*
+    /**
      * Validate all form elements by that params (e.g. required, length, pattern,...)
      * @return bool
      */
@@ -187,7 +187,7 @@ class Form
         return true;
     }
 
-    /*
+    /**
      * @return array, all form elements
      */
     public function getElements()
@@ -195,7 +195,7 @@ class Form
         return $this->elements;
     }
 
-    /*
+    /**
      * @return array, values of all elements as array ( element_name => value )
      */
     public function getData()
@@ -210,9 +210,9 @@ class Form
         return $res;
     }
 
-    /*
+    /**
      * Adding new element
-     * @param instance of Element $element
+     * @param Element $element
      * @param bool $required
      * @param bool $pre_fill, if element has value set it
      * @return Element
@@ -229,7 +229,7 @@ class Form
             throw new FormException('element is not instance of class Element!');
     }
 
-    /*
+    /**
      * Create new fieldset, 'open' him
      * @param FieldSet $fieldset
      * @return FieldSet
@@ -243,7 +243,7 @@ class Form
             throw new FormException('fieldset is not instance of class FieldSet!');
     }
 
-    /*
+    /**
      * Close the last open fieldset and return it
      * @return FieldSet
      */
@@ -260,7 +260,7 @@ class Form
         } else throw new FormException('before calling closeFieldSet must be fieldset opened.');
     }
 
-    /*
+    /**
      * If the last fieldset is not close, close it
      * @return string
      */
@@ -274,7 +274,7 @@ class Form
         return $open ? '</fieldset>' : '';
     }
 
-    /*
+    /***
      * Insert own html code
      * @param string
      * @return Form
@@ -287,7 +287,7 @@ class Form
         return $this;
     }
 
-    /*
+    /**
      * Move element to position
      * @param int $position, new element position
      * @param Element
@@ -318,7 +318,7 @@ class Form
         $this->elements = $result;
     }
 
-    /*
+    /**
      * Setting attribute to form
      * @param string $attr
      * @return Form
@@ -329,7 +329,7 @@ class Form
         return $this;
     }
 
-    /*
+    /**
      * Setting id to form
      * @param string $id
      * @return Form
@@ -340,7 +340,7 @@ class Form
         return $this;
     }
 
-    /*
+    /**
      * Setting form class, you can call multiple times
      * @param string $class
      * @return Form
@@ -351,7 +351,7 @@ class Form
         return $this;
     }
 
-    /*
+    /**
      * Setting the form method attribute
      * @param string $method
      * @return Form
@@ -363,7 +363,7 @@ class Form
         return $this;
     }
 
-    /*
+    /**
      * Setting the form action attribute
      * @param string $action
      * @return Form
@@ -374,7 +374,7 @@ class Form
         return $this;
     }
 
-    /*
+    /**
      * @return string, form id attribute
      */
     public function getId()
@@ -382,7 +382,7 @@ class Form
         return $this->id;
     }
 
-    /*
+    /**
      * @return string, the form name - unique identifier of the form
      */
     public function getName()
@@ -390,7 +390,7 @@ class Form
         return $this->name;
     }
 
-    /*
+    /**
      * @param string $id, the element id attribute
      * @return Element | null
      */
@@ -404,7 +404,7 @@ class Form
         return null;
     }
 
-    /*
+    /**
      * @param string $name, the element name attribute
      * @return Element | null
      */
