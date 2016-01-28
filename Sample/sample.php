@@ -28,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     echo '<h2>Data from Form:</h2>';
 
-    // validatin form elements
+    // validation form elements
     if ($sendForm->validate()) {
         $data = $sendForm->getData();
         foreach ($data as $k => $v)
