@@ -21,6 +21,11 @@ include_once 'Legend.php';
 include_once 'FormException.php';
 include_once 'InputFile.php';
 
+
+/*
+ * Lite form builder library
+ * @author Martin Forejt
+ */
 class Form
 {
     private $name;
@@ -32,6 +37,11 @@ class Form
     private $elements = array();
     private $attributes = array();
 
+    /*
+     * @param string $name, unique identifier of the form
+     * @param string $method, form method attribute
+     * @param string $action, form action attribute
+     */
     public function __construct($name, $method = 'POST', $action = null)
     {
         $this->name = $name;
@@ -40,7 +50,7 @@ class Form
     }
 
     /*
-     * Vykreslí formulář
+     * Render the form
      */
     public function render()
     {
@@ -57,18 +67,23 @@ class Form
             $html .= '"';
         }
         $html .= '>';
+
         foreach ($this->elements as $element) {
             if ($element instanceof Element) $html .= $element->render();
             elseif (is_string($element)) $html .= $element;
         }
+
         $html .= $this->checkOpenedFieldSet();
         $html .= '</form></div>';
         $_SESSION['php_lite_form_builder'][$this->name] = $this;
+
         echo $html;
     }
 
     /*
-     * Vrací formulář podle jména, musí se volat vždy po odeslání formuláře k zisku dat
+     * Return Form object by name, must call before validating, getting data
+     * @param string $name, unique identifier of the form
+     * @return Form | null
      */
     public static function getForm($name)
     {
@@ -84,7 +99,9 @@ class Form
     }
 
     /*
-     * existuje element
+     * Verify if exist an element
+     * @param Element $element
+     * @return bool
      */
     public function issetElement($element)
     {
@@ -93,20 +110,24 @@ class Form
     }
 
     /*
-     * Uloží formulář do proměnné, může se volat na jeden formůlář vícekrát, vždy se pouze přidá
+     * Save form to static variable $forms
      */
     public function create()
     {
         self::$forms[$this->name] = $this;
     }
 
+    /*
+     * @return string, form method attribute
+     */
     public function getMethod()
     {
         return $this->method;
     }
 
     /*
-     * ukládá formuláře ze session do statického pole, ukládá se hodnota formulářových prvků
+     * Save form form session to static variable $forms, assigning values to element,
+     * must call before validating or getting data
      */
     public function process()
     {
@@ -153,7 +174,8 @@ class Form
     }
 
     /*
-     * Validuje všechny elementy formuláře podle zadaných kriterií (required, length, pattern,...)
+     * Validate all form elements by that params (e.g. required, length, pattern,...)
+     * @return bool
      */
     public function validate()
     {
@@ -166,7 +188,7 @@ class Form
     }
 
     /*
-     * Vrací všechny elementy formuláře
+     * @return array, all form elements
      */
     public function getElements()
     {
@@ -174,7 +196,7 @@ class Form
     }
 
     /*
-     * Vrací zadaného hodnoty všech elementů jako pole 'element' => 'hodnota'
+     * @return array, values of all elements as array ( element_name => value )
      */
     public function getData()
     {
@@ -189,7 +211,11 @@ class Form
     }
 
     /*
-     * Přidá další element, required..., pre_fill - element automaticky předvyplněn
+     * Adding new element
+     * @param instance of Element $element
+     * @param bool $required
+     * @param bool $pre_fill, if element has value set it
+     * @return Element
      */
     public function addElement($element, $required = false, $pre_fill = true)
     {
@@ -204,7 +230,9 @@ class Form
     }
 
     /*
-     * Vytvoří nový fieldset 'otvře' jej
+     * Create new fieldset, 'open' him
+     * @param FieldSet $fieldset
+     * @return FieldSet
      */
     public function openFieldSet($fieldSet)
     {
@@ -216,7 +244,8 @@ class Form
     }
 
     /*
-     * Zavírá předešlí otevřený fieldset a vrací ho
+     * Close the last open fieldset and return it
+     * @return FieldSet
      */
     public function closeFieldSet()
     {
@@ -232,7 +261,8 @@ class Form
     }
 
     /*
-     * Pokud je neuzavřený fieldset zavírá ho
+     * If the last fieldset is not close, close it
+     * @return string
      */
     private function checkOpenedFieldSet()
     {
@@ -245,7 +275,9 @@ class Form
     }
 
     /*
-     * Vloží vlastní html kód
+     * Insert own html code
+     * @param string
+     * @return Form
      */
     public function addHtml($html)
     {
@@ -256,7 +288,9 @@ class Form
     }
 
     /*
-     * Přesune element na danou pozici
+     * Move element to position
+     * @param int $position, new element position
+     * @param Element
      */
     public function moveElement($position, $element)
     {
@@ -285,7 +319,9 @@ class Form
     }
 
     /*
-     *
+     * Setting attribute to form
+     * @param string $attr
+     * @return Form
      */
     public function setAttribute($attr)
     {
@@ -294,7 +330,9 @@ class Form
     }
 
     /*
-     * Nastavení id formuláře
+     * Setting id to form
+     * @param string $id
+     * @return Form
      */
     public function setId($id)
     {
@@ -303,7 +341,9 @@ class Form
     }
 
     /*
-     * Nastevení třídy formůláře, může se volat vícekrát - více tříd
+     * Setting form class, you can call multiple times
+     * @param string $class
+     * @return Form
      */
     public function setClass($class)
     {
@@ -312,7 +352,9 @@ class Form
     }
 
     /*
-     * Nastavení metody
+     * Setting the form method attribute
+     * @param string $method
+     * @return Form
      */
     public function setMethod($method)
     {
@@ -322,7 +364,9 @@ class Form
     }
 
     /*
-     * Nastavení action
+     * Setting the form action attribute
+     * @param string $action
+     * @return Form
      */
     public function setAction($action)
     {
@@ -331,7 +375,7 @@ class Form
     }
 
     /*
-     * Vrací id formuláře
+     * @return string, form id attribute
      */
     public function getId()
     {
@@ -339,7 +383,7 @@ class Form
     }
 
     /*
-     * Vrací název formuláře
+     * @return string, the form name - unique identifier of the form
      */
     public function getName()
     {
@@ -347,7 +391,8 @@ class Form
     }
 
     /*
-     * Vrací element formuláře podle id
+     * @param string $id, the element id attribute
+     * @return Element | null
      */
     public function getElementById($id)
     {
@@ -360,7 +405,8 @@ class Form
     }
 
     /*
-     * Vrací element formuláře podle name
+     * @param string $name, the element name attribute
+     * @return Element | null
      */
     public function getElementByName($name)
     {
