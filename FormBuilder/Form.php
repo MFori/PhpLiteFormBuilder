@@ -63,7 +63,7 @@ class Form
         }
         $html .= $this->checkOpenedFieldSet();
         $html .= '</form></div>';
-        $_SESSION['forms'][$this->name] = $this;
+        $_SESSION['php_lite_form_builder'][$this->name] = $this;
         echo $html;
     }
 
@@ -72,11 +72,10 @@ class Form
      */
     public static function getForm($name)
     {
-        if (!isset(self::$forms)) self::$forms = $_SESSION['forms'];
+        if (!isset(self::$forms)) self::$forms = $_SESSION['php_lite_form_builder'];
         foreach (self::$forms as $form) {
             if ($form instanceof Form) {
                 if ($form->getName() == $name) {
-                    //unset($_SESSION['forms'][$name]);
                     return $form;
                 }
             }
@@ -111,8 +110,7 @@ class Form
      */
     public function process()
     {
-        //self::$forms = $_SESSION['forms'];
-        if (isset($_SESSION['forms'])) {
+        if (isset($_SESSION['php_lite_form_builder'])) {
             foreach (self::$forms as $form) {
 
                 if ($form->getMethod() == 'POST') $data = $_POST;
