@@ -177,7 +177,7 @@ class Form
      * Validate all form elements by that params (e.g. required, length, pattern,...)
      * @return bool
      */
-    public function validate()
+    public function isValid()
     {
         foreach ($this->elements as $element) {
             if ($element instanceof Element) {
