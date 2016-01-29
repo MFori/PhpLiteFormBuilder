@@ -35,11 +35,12 @@ class Form
     private static $forms;
     private $elements = array();
     private $attributes = array();
+    private $enctype;
 
     /**
-     * @param string $name, unique identifier of the form
-     * @param string $method, form method attribute
-     * @param string $action, form action attribute
+     * @param string $name , unique identifier of the form
+     * @param string $method , form method attribute
+     * @param string $action , form action attribute
      */
     public function __construct($name, $method = 'POST', $action = null)
     {
@@ -56,6 +57,7 @@ class Form
         $html = '<div id="' . $this->name . '"><form method="' . $this->method . '"';
         if (isset($this->action)) $html .= ' action="' . $this->action . '"';
         if (isset($this->id)) $html .= ' id="' . $this->id . '"';
+        if (isset($this->enctype)) $html .= ' enctype="' . $this->enctype . '"';
         foreach ($this->attributes as $attr) $html .= ' ' . $attr;
         if (sizeof($this->classes) > 0) {
             $html .= ' class="';
@@ -81,7 +83,7 @@ class Form
 
     /**
      * Return Form object by name, must call before validating, getting data
-     * @param string $name, unique identifier of the form
+     * @param string $name , unique identifier of the form
      * @return Form | null
      */
     public static function getForm($name)
@@ -161,6 +163,10 @@ class Form
                                 $this->getElementByName($element->getName())->setText($data[$element->getName()]);
                                 $this->getElementByName($element->getName())->setValue($data[$element->getName()]);
                             }
+                        } elseif ($element instanceof InputFile) {
+                            if (isset($_FILES[$element->getName()])) {
+                                $this->getElementByName($element->getName())->setFile($_FILES[$element->getName()]);
+                            }
                         } else {
                             if (isset($data[$element->getName()])) {
                                 $this->getElementByName($element->getName())->setValue($data[$element->getName()]);
@@ -201,10 +207,12 @@ class Form
     {
         $res = array();
         foreach ($this->elements as $element) {
-            if ($element instanceof Element)
-                $this->getElementByName($element->getName())->getValue();
-            if ($element instanceof Element)
-                $res[$element->getName()] = $this->getElementByName($element->getName())->getValue();
+            if ($element instanceof Element){
+                if($element instanceof InputFile)
+                    $res[$element->getName()] = $this->getElementByName($element->getName())->getFile();
+                else
+                    $res[$element->getName()] = $this->getElementByName($element->getName())->getValue();
+            }
         }
         return $res;
     }
@@ -223,6 +231,10 @@ class Form
             $element->setRequired($required);
             $element->setPreFill($pre_fill);
             $this->elements[] = $element;
+
+            if($element instanceof InputFile)
+                $this->setEnctype('multipart/form-data');
+
             return $element;
         } else
             throw new FormException('element is not instance of class Element!');
@@ -290,7 +302,7 @@ class Form
 
     /**
      * Move element to position
-     * @param int $position, new element position
+     * @param int $position , new element position
      * @param Element
      */
     public function moveElement($position, $element)
@@ -376,6 +388,17 @@ class Form
     }
 
     /**
+     * Setting the from enctype attribute
+     * @param string $enctype
+     * @return Form
+     */
+    public function setEnctype($enctype)
+    {
+        $this->enctype = $enctype;
+        return $this;
+    }
+
+    /**
      * @return string, form id attribute
      */
     public function getId()
@@ -392,7 +415,7 @@ class Form
     }
 
     /**
-     * @param string $id, the element id attribute
+     * @param string $id , the element id attribute
      * @return Element | null
      */
     public function getElementById($id)
@@ -406,7 +429,7 @@ class Form
     }
 
     /**
-     * @param string $name, the element name attribute
+     * @param string $name , the element name attribute
      * @return Element | null
      */
     public function getElementByName($name)
