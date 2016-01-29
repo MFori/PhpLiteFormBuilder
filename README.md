@@ -20,7 +20,7 @@ $mform = Form::getForm('myForm');
 
 $mform->process();
 
-if ( $mform->validate() ) {
+if ( $mform->isValid() ) {
   $data = $mform->getData();
   $name = $data['name'];
 }
