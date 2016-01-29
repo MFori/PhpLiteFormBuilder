@@ -1,9 +1,12 @@
 <?php
 
+/**
+ * Lite form builder library
+ * @author Martin Forejt
+ */
 class SelectOption extends Element{
     private $selected;
     private $text;
-    private $select;
 
     public function setSelected($selected = true){
         $this->selected = $selected;

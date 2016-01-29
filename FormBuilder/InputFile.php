@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * Lite form builder library
+ * @author Martin Forejt
+ */
 class InputFile extends Input {
     private $accept;
 

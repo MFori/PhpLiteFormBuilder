@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * Lite form builder library
+ * @author Martin Forejt
+ */
 class InputTel extends Input {
 
     private $maxLength;

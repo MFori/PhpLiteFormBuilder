@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * Lite form builder library
+ * @author Martin Forejt
+ */
 class InputSubmit extends Input {
 
     public function __construct($divId = null, $divClasses = array()){

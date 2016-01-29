@@ -18,9 +18,8 @@ include_once 'Select.php';
 include_once 'Button.php';
 include_once 'FieldSet.php';
 include_once 'Legend.php';
-include_once 'FormException.php';
 include_once 'InputFile.php';
-
+include_once 'FormException.php';
 
 /**
  * Lite form builder library

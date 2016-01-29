@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * Lite form builder library
+ * @author Martin Forejt
+ */
 class FieldSet extends Element {
     private $disabled = false;
     private $legend;

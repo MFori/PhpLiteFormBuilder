@@ -1,5 +1,11 @@
 ﻿<?php
 
+/**
+ *  PhpLiteFormBuilder Sample
+ *  @author Martin Forejt
+ *  https://github.com/MFori
+ */
+
 include '../FormBuilder/Form.php';
 
 // FormBuilder use super global variable $_SESSION
