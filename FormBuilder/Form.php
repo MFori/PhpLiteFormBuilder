@@ -88,10 +88,13 @@ class Form
      */
     public static function getForm($name)
     {
-        if (!isset(self::$forms)) self::$forms = $_SESSION['php_lite_form_builder'];
+        if (!isset(self::$forms))
+            self::$forms = $_SESSION['php_lite_form_builder'];
+
         foreach (self::$forms as $form) {
             if ($form instanceof Form) {
                 if ($form->getName() == $name) {
+                    $form->process();
                     return $form;
                 }
             }
@@ -130,46 +133,52 @@ class Form
      * Save form form session to static variable $forms, assigning values to element,
      * must call before validating or getting data
      */
-    public function process()
+    private function process()
     {
         if (isset($_SESSION['php_lite_form_builder'])) {
             foreach (self::$forms as $form) {
 
-                if ($form->getMethod() == 'POST') $data = $_POST;
-                elseif ($form->getMethod() == 'GET') $data = $_GET;
-                else $data = null;
+                if ($form instanceof Form) {
 
-                foreach ($form->getElements() as $element) {
-                    if ($element instanceof Element) {
-                        if ($element instanceof InputCheckBox || $element instanceof InputRadio) {
-                            if (isset($data[$element->getName()])) {
-                                $this->getElementByName($element->getName())->setChecked();
-                                $this->getElementByName($element->getName())->setValue($data[$element->getName()]);
-                            } else {
-                                $element->setValue(null);
-                                $element->setChecked(false);
-                            }
-                        } elseif ($element instanceof Select) {
-                            if (isset($data[$element->getName()])) {
-                                foreach ($element->getOptions() as $option) {
-                                    if ($data[$element->getName()] == $option->getValue()) {
-                                        $this->getElementByName($element->getName())->getOptionByValue($option->getValue())->setSelected();
+                    if ($form->getName() == $this->getName()) {
+
+                        if ($form->getMethod() == 'POST') $data = $_POST;
+                        elseif ($form->getMethod() == 'GET') $data = $_GET;
+                        else return;
+
+                        foreach ($form->getElements() as $element) {
+                            if ($element instanceof Element) {
+                                if ($element instanceof InputCheckBox || $element instanceof InputRadio) {
+                                    if (isset($data[$element->getName()])) {
+                                        $this->getElementByName($element->getName())->setChecked();
+                                        $this->getElementByName($element->getName())->setValue($data[$element->getName()]);
+                                    } else {
+                                        $element->setValue(null);
+                                        $element->setChecked(false);
+                                    }
+                                } elseif ($element instanceof Select) {
+                                    if (isset($data[$element->getName()])) {
+                                        foreach ($element->getOptions() as $option) {
+                                            if ($data[$element->getName()] == $option->getValue()) {
+                                                $this->getElementByName($element->getName())->getOptionByValue($option->getValue())->setSelected();
+                                                $this->getElementByName($element->getName())->setValue($data[$element->getName()]);
+                                            }
+                                        }
+                                    }
+                                } elseif ($element instanceof TextArea) {
+                                    if (isset($data[$element->getName()])) {
+                                        $this->getElementByName($element->getName())->setText($data[$element->getName()]);
+                                        $this->getElementByName($element->getName())->setValue($data[$element->getName()]);
+                                    }
+                                } elseif ($element instanceof InputFile) {
+                                    if (isset($_FILES[$element->getName()])) {
+                                        $this->getElementByName($element->getName())->setFile($_FILES[$element->getName()]);
+                                    }
+                                } else {
+                                    if (isset($data[$element->getName()])) {
                                         $this->getElementByName($element->getName())->setValue($data[$element->getName()]);
                                     }
                                 }
-                            }
-                        } elseif ($element instanceof TextArea) {
-                            if (isset($data[$element->getName()])) {
-                                $this->getElementByName($element->getName())->setText($data[$element->getName()]);
-                                $this->getElementByName($element->getName())->setValue($data[$element->getName()]);
-                            }
-                        } elseif ($element instanceof InputFile) {
-                            if (isset($_FILES[$element->getName()])) {
-                                $this->getElementByName($element->getName())->setFile($_FILES[$element->getName()]);
-                            }
-                        } else {
-                            if (isset($data[$element->getName()])) {
-                                $this->getElementByName($element->getName())->setValue($data[$element->getName()]);
                             }
                         }
                     }
@@ -207,8 +216,8 @@ class Form
     {
         $res = array();
         foreach ($this->elements as $element) {
-            if ($element instanceof Element){
-                if($element instanceof InputFile)
+            if ($element instanceof Element) {
+                if ($element instanceof InputFile)
                     $res[$element->getName()] = $this->getElementByName($element->getName())->getFile();
                 else
                     $res[$element->getName()] = $this->getElementByName($element->getName())->getValue();
@@ -232,7 +241,7 @@ class Form
             $element->setPreFill($pre_fill);
             $this->elements[] = $element;
 
-            if($element instanceof InputFile)
+            if ($element instanceof InputFile)
                 $this->setEnctype('multipart/form-data');
 
             return $element;

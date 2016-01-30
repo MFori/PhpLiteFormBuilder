@@ -28,20 +28,20 @@ $mForm->render();
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $sendForm = Form::getForm('mForm');
 
-    // must call before validating or getting data
-    $sendForm->process();
+    // Checking if form with this name exist
+    if($sendForm instanceof Form) {
+        echo '<h2>Data from Form:</h2>';
 
-    echo '<h2>Data from Form:</h2>';
+        // validation form elements
+        if ($sendForm->isValid()) {
+            $data = $sendForm->getData();
 
-    // validation form elements
-    if ($sendForm->isValid()) {
-        $data = $sendForm->getData();
+            move_uploaded_file($data['file']['tmp_name'], '../images/'.$data['file']['name']);
 
-        move_uploaded_file($data['file']['tmp_name'], '../images/'.$data['file']['name']);
+            echo '<img src="../images/' . $data['file']['name'] . '">';
 
-        echo '<img src="../images/' . $data['file']['name'] . '">';
-
-    } else {
-        echo 'Form is not valid.';
+        } else {
+            echo 'Form is not valid.';
+        }
     }
 }

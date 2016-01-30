@@ -27,19 +27,20 @@ $mForm->render();
 
 // processing form submission
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+
     $sendForm = Form::getForm('mForm');
 
-    // must call before validating or getting data
-    $sendForm->process();
+    // Checking if form with this name exist
+    if($sendForm instanceof Form) {
+        echo '<h2>Data from Form:</h2>';
 
-    echo '<h2>Data from Form:</h2>';
-
-    // validation form elements
-    if ($sendForm->isValid()) {
-        $data = $sendForm->getData();
-        foreach ($data as $k => $v)
-            echo $k . ': ' . $v . '<br>';
-    } else {
-        echo 'Form is not valid.';
+        // validation form elements
+        if ($sendForm->isValid()) {
+            $data = $sendForm->getData();
+            foreach ($data as $k => $v)
+                echo $k . ': ' . $v . '<br>';
+        } else {
+            echo 'Form is not valid.';
+        }
     }
 }
