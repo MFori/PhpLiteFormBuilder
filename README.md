@@ -18,11 +18,10 @@ $form->render();
 ```
 $mform = Form::getForm('myForm');
 
-$mform->process();
-
-if ( $mform->isValid() ) {
-  $data = $mform->getData();
-  $name = $data['name'];
-}
+if ( $mform instanceof Form)
+  if ( $mform->isValid() ) {
+    $data = $mform->getData();
+    $name = $data['name'];
+  }
 
 ```
