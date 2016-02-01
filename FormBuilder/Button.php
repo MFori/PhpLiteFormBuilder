@@ -19,7 +19,6 @@ class Button extends Element {
     }
 
     function render(){
-        
         $html = $this->renderOpenDiv();
         if(isset($this->label)){
             $html .= $this->label->render();
