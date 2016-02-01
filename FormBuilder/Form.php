@@ -21,6 +21,9 @@ include_once 'Legend.php';
 include_once 'InputFile.php';
 include_once 'FormException.php';
 
+define('LFB_OPEN_PART', 'lite-form-builder-open-part');
+define('LFB_CLOSE_PART', 'lite-form-builder-close-part');
+
 /**
  * Lite form builder library
  * @author Martin Forejt
@@ -36,6 +39,9 @@ class Form
     private $elements = array();
     private $attributes = array();
     private $enctype;
+    private $parts = array();
+    private $isOpenPart = false;
+    private $isHeaderRendered = false;
 
     /**
      * @param string $name , unique identifier of the form
@@ -54,11 +60,33 @@ class Form
      */
     public function render()
     {
+        $html = $this->renderFormHeader();
+
+        foreach ($this->elements as $element) {
+            if ($element instanceof Element) $html .= $element->render();
+            elseif (is_string($element)) $html .= $element;
+        }
+
+        $html .= $this->renderFormEnd();
+
+        echo $html;
+    }
+
+    /**
+     * Render the open div with attributes
+     * @return string
+     */
+    private function renderFormHeader()
+    {
+        $this->isHeaderRendered = true;
+
         $html = '<div id="' . $this->name . '"><form method="' . $this->method . '"';
+
         if (isset($this->action)) $html .= ' action="' . $this->action . '"';
         if (isset($this->id)) $html .= ' id="' . $this->id . '"';
         if (isset($this->enctype)) $html .= ' enctype="' . $this->enctype . '"';
         foreach ($this->attributes as $attr) $html .= ' ' . $attr;
+
         if (sizeof($this->classes) > 0) {
             $html .= ' class="';
             foreach ($this->classes as $class) {
@@ -69,16 +97,20 @@ class Form
         }
         $html .= '>';
 
-        foreach ($this->elements as $element) {
-            if ($element instanceof Element) $html .= $element->render();
-            elseif (is_string($element)) $html .= $element;
-        }
+        return $html;
+    }
 
-        $html .= $this->checkOpenedFieldSet();
+    /**
+     * Close form tag and save to session
+     * @return string
+     */
+    private function renderFormEnd()
+    {
+        $html = $this->checkOpenedFieldSet();
         $html .= '</form></div>';
         $_SESSION['php_lite_form_builder'][$this->name] = $this;
 
-        echo $html;
+        return $html;
     }
 
     /**
@@ -464,5 +496,66 @@ class Form
             }
             return $param;
         } else return $param;
+    }
+
+    /**
+     * open new part
+     * @param null $partKey
+     */
+    public function openPart($partKey = null)
+    {
+        if ($partKey == null) $partKey = sizeof($this->parts) + 1;
+        $this->parts[] = $partKey;
+        $this->isOpenPart = $partKey;
+
+        $this->elements[] = array('type' => LFB_OPEN_PART, 'key' => $partKey);
+    }
+
+    /**
+     *  Close the last opened part
+     */
+    public function closePart()
+    {
+        if (!$this->isOpenPart) return;
+        $this->isOpenPart = false;
+        $this->elements[] = array('type' => LFB_CLOSE_PART, 'key' => end($this->parts));
+    }
+
+    /**
+     * Render only part of form
+     * @param mixed $partKey
+     * @return string
+     */
+    public function renderPart($partKey)
+    {
+        if (!in_array($partKey, $this->parts)) return;
+
+        foreach($this->parts as $key => $part) if($part==$partKey) unset($this->parts[$key]);
+
+            $html = '';
+        if (!$this->isHeaderRendered) $html = $this->renderFormHeader();
+
+        for ($i = 0; $i < sizeof($this->elements); $i++) {
+
+            if (is_array($this->elements[$i]) && $this->elements[$i]['type'] == LFB_OPEN_PART &&
+                $this->elements[$i]['key'] == $partKey
+            ) {
+
+                for ($j = $i + 1; $j < sizeof($this->elements) + $i; $j++) {
+
+                    if ($this->elements[$j] instanceof Element) $html .= $this->elements[$j]->render();
+                    elseif (is_string($this->elements[$j])) $html .= $this->elements[$j];
+                    elseif (is_array($this->elements[$j]) && $this->elements[$j]['type'] == LFB_CLOSE_PART &&
+                        isset($this->elements[$j]['key']) && $this->elements[$j]['key'] == $partKey
+                    ) break 2;
+
+                }
+            }
+
+        }
+
+        echo $html;
+
+        if (sizeof($this->parts)==0) echo $this->renderFormEnd();
     }
 }
