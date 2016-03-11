@@ -19,8 +19,7 @@ class InputCheckBox extends Input{
 
     function isValid(){
         $value = $this->getValue();
-        echo $this->getName().' - '.$value.'<br>';
-        if(isset($this->required)){
+        if(isset($this->required) && $this->required){
             if($value == '') return false;
             if($value == null) return false;
             if(strtoupper($value) == 'OFF') return false;

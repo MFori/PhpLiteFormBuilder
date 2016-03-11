@@ -12,6 +12,7 @@ class Select extends Element {
 
     public function __construct($divId = null, $divClasses = array()){
         parent::__construct($divId, $divClasses);
+        $this->required = false;
     }
 
     public function addOption($option){
@@ -42,7 +43,7 @@ class Select extends Element {
 
     function isValid(){
         $value = $this->getValue();
-        if(isset($this->required)){
+        if($this->required){
             if(!isset($value)) return false;
             elseif($value==null) return false;
             elseif($value=='') return false;
@@ -68,7 +69,7 @@ class Select extends Element {
             $html = substr($html, 0, -1);
             $html .= '"';
         }
-        if(isset($this->required)) $html .= ' required';
+        if($this->required) $html .= ' required';
         foreach($this->attributes as $attr){
             $html .= ' ' . $attr;
         }

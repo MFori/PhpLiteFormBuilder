@@ -60,7 +60,8 @@ class Form
      */
     public function render()
     {
-        $html = $this->renderFormHeader();
+        $html = '';
+        if(!$this->isHeaderRendered) $html = $this->renderFormHeader();
 
         foreach ($this->elements as $element) {
             if ($element instanceof Element) $html .= $element->render();
@@ -76,7 +77,7 @@ class Form
      * Render the open div with attributes
      * @return string
      */
-    private function renderFormHeader()
+    public function renderFormHeader()
     {
         $this->isHeaderRendered = true;
 
