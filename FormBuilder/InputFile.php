@@ -29,18 +29,29 @@ class InputFile extends Input
 
     function isValid()
     {
-        if ($this->required) {
-            if (!isset($this->file)) return false;
-            if ($this->file == '') return false;
-            if (!sizeof($this->file) > 0) return false;
+        if($this->isSend()){
+            if ($this->required) {
+                if (!isset($this->file)) return false;
+                if ($this->file == '') return false;
+                if (!sizeof($this->file) > 0) return false;
+            }
+            if (isset($this->maxSize)) {
+                if ($this->file['size'] > $this->maxSize) return false;
+            }
+            if (isset($this->accept) && isset($this->file)) {
+                $pattern = '#'.$this->accept.'#';
+                preg_match($pattern, $this->file['type'], $match);
+                if(!isset($match[0])) return false;
+            }
+            return true;
         }
-        if (isset($this->maxSize)) {
-            if ($this->file['size'] > $this->maxSize) return false;
-        }
-        if (isset($this->accept)) {
-            $pattern = '#'.$this->accept.'#';
-            preg_match($pattern, $this->file['type'], $match);
-            if(!isset($match[0])) return false;
+        return !$this->required;
+    }
+
+    private function isSend()
+    {
+        foreach($this->file as $key => $item) if(trim($item)==''){
+            return false;
         }
         return true;
     }
