@@ -1,4 +1,5 @@
 # PhpLiteFormBuilder
+####PhpLiteFormBuilder is lite library for manipulating (creating and processing) forms in php. 
 
 ###Basic form:
 ```
