@@ -1,7 +1,7 @@
 # PhpLiteFormBuilder
-####PhpLiteFormBuilder is lite library for manipulating (creating and processing) forms in php. 
+#### PhpLiteFormBuilder is lite library for manipulating (creating and processing) forms in php. 
 
-###Basic form:
+### Basic form:
 ```
 $form = new Form('myForm', 'post', 'action_file.php');
 
@@ -14,7 +14,7 @@ $form->render();
 
 ```
 
-###Getting data:
+### Getting data:
 
 ```
 $mform = Form::getForm('myForm');
